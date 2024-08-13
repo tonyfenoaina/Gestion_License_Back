@@ -1,0 +1,16 @@
+/api/auth/login 
+--> POST
+
+    status ok : return token
+    status 404 : email not found
+    status 401 : wrong password
+
+/api/auth/protected
+    status ok : return User
+    status 401 : unauthorized ou expired
+
+/api/users/getUser
+    status ok : return user role code User
+
+/api/users/getAll
+    status ok : return all user
