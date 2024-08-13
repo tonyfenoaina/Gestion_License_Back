@@ -14,3 +14,13 @@
 
 /api/users/getAll
     status ok : return all user
+
+
+/pagination
+
+/api/user  
+    status ok : return user de 1 - 5
+    afaka asina parametre na tsia
+--> parametre 
+        - page : default 0 
+        - size : default 5

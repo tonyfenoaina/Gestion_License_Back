@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -83,6 +86,12 @@ public class UserService implements UserDetailsService{
     
     public List<User> getUsersByRole(String codeRole){
         return userRepository.findByRole_CodeRole(codeRole);
+    }
+
+    public ResponseEntity<?> getUsers(int page,int size){
+        Pageable pageable= PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findAll(pageable);
+        return new ResponseEntity<>(userPage,HttpStatus.OK); 
     }
 
     public List<User> getAll(){
