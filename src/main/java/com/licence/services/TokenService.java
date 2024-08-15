@@ -23,10 +23,9 @@ public class TokenService {
     private int DAYS_EXPIRATION;
 
     //generer un token 
-    public String createToken(String email,String role){
+    public String createToken(String email){
         return  Jwts
                 .builder()
-                .claim("role", role)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_EXPIRATION)))
@@ -54,11 +53,6 @@ public class TokenService {
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
     }
-
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
-    }
-
 
 
 }

@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +24,7 @@ import com.licence.handler.ResponseHandler;
 import com.licence.models.User;
 import com.licence.repository.UserRepository;
 import com.licence.request.LoginRequest;
+import com.licence.response.LoginResponse;
 
 
 @Service
@@ -28,13 +33,21 @@ public class UserService implements UserDetailsService{
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
 
     @Autowired
-    private TokenService tokenService;
+    @Lazy
+    PasswordEncoder passwordEncoder;
 
+    @Autowired
+    @Lazy
+    AuthenticationManager authenticationManager;
 
+    @Autowired
+    @Lazy
+    TokenService tokenService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -45,48 +58,38 @@ public class UserService implements UserDetailsService{
         return new org.springframework.security.core.userdetails.User(
             user.getEmail(),
             user.getPassword(),
-            Collections.singleton(new SimpleGrantedAuthority(user.getRole().getCodeRole()))
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_"+user.getRole().getCodeRole()))
         );
     }
 
-
     public User getUserByToken(String token){
-        String email = tokenService.extractEmail(token);
-        String role = tokenService.extractRole(token);
-        User user = userRepository.findByEmail(email);
-        if (user.getRole().getCodeRole().equals(role)) {
-            return user;
-        }
-        return null;
-    }
-
-    public ResponseEntity<?> getUser(String t){
-        String token = t.replaceAll("Bearer ", "");
-        User user = getUserByToken(token);
-        if (tokenService.isTokenExpired(token)) {
-            return new ResponseEntity<>(ResponseHandler.showResponse("Token expired"),HttpStatus.UNAUTHORIZED);
-        }
-        if (user!=null) return new ResponseEntity<>(user,HttpStatus.OK);
-        return new ResponseEntity<>(ResponseHandler.showResponse("Token not found"),HttpStatus.UNAUTHORIZED);
+        String authorizationToken = token.replaceAll("Bearer ", "");
+        String email = tokenService.extractEmail(authorizationToken);
+        return userRepository.findByEmail(email);
     }
 
     public ResponseEntity<?> login(LoginRequest loginRequest){
-        User user = userRepository.findByEmail(loginRequest.getEmail());
+        String email = loginRequest.getEmail();
+        String password = passwordEncoder.encode(loginRequest.getPassword());
+        User user = userRepository.findByEmail(email);
         if (user==null) {
-            return new ResponseEntity<>(ResponseHandler.showResponse("Email not found"),HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ResponseHandler.showResponse("User not found"),HttpStatus.NOT_FOUND);   
         }
-        if (user.getPassword().equals(loginRequest.getPassword())) {
-            return new ResponseEntity<>(tokenService.createToken(loginRequest.getEmail(), user.getRole().getCodeRole()),HttpStatus.NOT_FOUND);
+        if (user.getPassword().equals(password)) {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email,password)
+            );
+            return new ResponseEntity<>(new LoginResponse(tokenService.createToken(email)),HttpStatus.OK);
         }
-        // if (passwordEncoder.matches(password, user.getPassword())) {
-        //     return new ResponseEntity<>(tokenService.createToken(email, user.getRole().getCodeRole()),HttpStatus.NOT_FOUND);
-        // }
-        return new ResponseEntity<>(ResponseHandler.showResponse("Invalid credentials"),HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ResponseHandler.showResponse("Wrong password"),HttpStatus.UNAUTHORIZED);
     }
+
+
     
     public List<User> getUsersByRole(String codeRole){
         return userRepository.findByRole_CodeRole(codeRole);
     }
+
 
     public ResponseEntity<?> getUsers(int page,int size){
         Pageable pageable= PageRequest.of(page, size);
@@ -94,14 +97,9 @@ public class UserService implements UserDetailsService{
         return new ResponseEntity<>(userPage,HttpStatus.OK); 
     }
 
+
     public List<User> getAll(){
         return userRepository.findAll();
     }
-
-    public void save(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
 
 }

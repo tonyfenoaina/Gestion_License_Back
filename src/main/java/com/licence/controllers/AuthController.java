@@ -8,11 +8,10 @@ import com.licence.services.UserService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
@@ -20,18 +19,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public class AuthController{
 
     @Autowired
+    @Lazy
     private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println(loginRequest);
         return userService.login(loginRequest);
     }
-    
-    @GetMapping("/protected")
-    public ResponseEntity<?> protectedEndpoint(@RequestHeader(name = "Authorization") String token) {
-        return userService.getUser(token);
-    }
-    
 
 }

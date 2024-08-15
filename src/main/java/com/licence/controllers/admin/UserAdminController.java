@@ -1,4 +1,4 @@
-package com.licence.controllers;
+package com.licence.controllers.admin;
 
 import java.util.List;
 
@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.licence.models.User;
 import com.licence.services.UserService;
 
-
-
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
-
+@RequestMapping("/secure/admin/users")
+public class UserAdminController {
     @Autowired
     private UserService userService;
+
     
     @GetMapping("/getAll")
     public List<User> getAll(){
@@ -37,6 +35,4 @@ public class UserController {
         @RequestParam(defaultValue = "5") int size) {
         return userService.getUsers(page, size);
     }
-    
-
 }
