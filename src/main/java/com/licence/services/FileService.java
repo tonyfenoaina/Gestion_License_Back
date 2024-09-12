@@ -1,6 +1,10 @@
 package com.licence.services;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
+
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -28,6 +32,7 @@ public class FileService {
         return null;
     }
     
+
     /**
      *Fonction permetant de recuperer le chemin du fichier
      * @param name le nom du fichier
@@ -41,6 +46,11 @@ public class FileService {
         return null;
     }
     
+
+    public String convertToBase64(MultipartFile file) throws IOException {
+        byte[] fileBytes = file.getBytes();
+        return Base64.getEncoder().encodeToString(fileBytes);
+    }
     
     
 }

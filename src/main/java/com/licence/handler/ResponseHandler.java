@@ -11,9 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ResponseHandler {
 
 
-    public static Response showResponse(String message){
-        return new Response(message);
-    }
 
     public static String showError(Exception exception, HttpStatus httpStatus) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -23,20 +20,5 @@ public class ResponseHandler {
         return mapper.writeValueAsString(map);
     }
 
-    private static class Response {
-        
-        private final String message;
-
-        public Response(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        
-        
-    }
 
 }

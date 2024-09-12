@@ -6,11 +6,13 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+
 import java.io.IOException;
 
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(TransactionSystemException.class)
     public String handleConstraintViolation(TransactionSystemException ex) throws IOException {
         if (ex.getCause() instanceof RollbackException rollbackException) {
@@ -20,6 +22,15 @@ public class GlobalExceptionHandler {
             }
         }
         // Handle other TransactionSystemExceptions here
+        return ResponseHandler.showError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
+
+
+    @ExceptionHandler(Exception.class)
+    public String handleAllExceptions(Exception ex) throws IOException {
+        // Log l'exception pour déboguer
+        ex.printStackTrace();
         return ResponseHandler.showError(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

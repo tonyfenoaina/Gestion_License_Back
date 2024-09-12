@@ -90,19 +90,5 @@ public class SecurityConfig {
     }
 
 
-    @Bean
-	public FilterRegistrationBean<?> corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost:3000");
-		config.setAllowedMethods(Arrays.asList("POST", "OPTIONS", "GET", "DELETE", "PUT"));
-		config.setAllowedHeaders(List.of("*"));
-		source.registerCorsConfiguration("/**", config);
-		FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(new CorsFilter(source));
-		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return bean;
-	}
-
 
 }

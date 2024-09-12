@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,10 +19,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.licence.dto.LoginDto;
+import com.licence.dto.UserDto;
 import com.licence.handler.ResponseHandler;
+import com.licence.models.Role;
 import com.licence.models.User;
+import com.licence.repository.RoleRepository;
 import com.licence.repository.UserRepository;
-import com.licence.request.LoginRequest;
 import com.licence.response.LoginResponse;
 
 
@@ -33,9 +35,8 @@ public class UserService implements UserDetailsService{
     @Autowired
     private UserRepository userRepository;
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     @Lazy
@@ -68,7 +69,7 @@ public class UserService implements UserDetailsService{
         return userRepository.findByEmail(email);
     }
 
-    public ResponseEntity<?> login(LoginRequest loginRequest){
+    public ResponseEntity<?> login(LoginDto loginRequest){
         String email = loginRequest.getEmail();
         String password = passwordEncoder.encode(loginRequest.getPassword());
         User user = userRepository.findByEmail(email);
@@ -90,6 +91,11 @@ public class UserService implements UserDetailsService{
         return userRepository.findByRole_CodeRole(codeRole);
     }
 
+    public ResponseEntity<?> getUserByRole(String codeRole,int page,int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findByRole_CodeRole(codeRole,pageable);
+        return new ResponseEntity<>(userPage,HttpStatus.OK);
+    }
 
     public ResponseEntity<?> getUsers(int page,int size){
         Pageable pageable= PageRequest.of(page, size);
@@ -100,6 +106,20 @@ public class UserService implements UserDetailsService{
 
     public List<User> getAll(){
         return userRepository.findAll();
+    }
+
+    public ResponseEntity<?> createUser(UserDto userDto){
+        System.out.println(userDto);
+        User user = userDto.getUser();
+        Role role = roleRepository.findByCodeRole("USER");
+        user.setRole(role);
+        userRepository.save(user);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
+    
+
+    public void updateStateUser(Long id){
+        userRepository.updateState(id);
     }
 
 }

@@ -25,6 +25,7 @@ public class Customer{
 
     private String surname;
     private String firstname;
+    private String email;
     private String contact;
     private String address;
     
@@ -52,6 +53,12 @@ public class Customer{
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
     public String getContact() {
         return contact;
     }
@@ -62,6 +69,15 @@ public class Customer{
         return address;
     }
     public void setAddress(String address) {
+        this.address = address;
+    }
+    public Customer() {
+    }
+    public Customer(String surname, String firstname, String email, String contact, String address) {
+        this.surname = surname;
+        this.firstname = firstname;
+        this.email = email;
+        this.contact = contact;
         this.address = address;
     }
 

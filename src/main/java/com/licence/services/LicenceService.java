@@ -1,42 +1,49 @@
 package com.licence.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.UUID;
+import java.util.Date;
+import java.util.Properties;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax0.license3j.Feature;
 import javax0.license3j.License;
-import javax0.license3j.License.Create;
 import javax0.license3j.crypto.LicenseKeyPair;
 import javax0.license3j.io.IOFormat;
-import javax0.license3j.io.KeyPairWriter;;
+import javax0.license3j.io.LicenseReader;
+import javax0.license3j.io.LicenseWriter;;
 
 @Service
 public class LicenceService {
-    
-    String public_key="ICP";
-    String private_key="lskqdjqslksdjqkl";
 
-    String format = "BINARY";
-    int size = 2048;
-    String digest = "SHA-256";
+    File licence_directory; 
+    File licence_file; 
 
     String algorithme = "RSA";
 
+    int size = 2048;
     License license;
+
+    @Value("${licence-format}")
+    private String format;
+
+    @Value("${licence-digest}")
+    private String digest;
+
     LicenseKeyPair licenseKeyPair;
 
 
@@ -48,134 +55,74 @@ public class LicenceService {
         }
     }
 
-
-
-    public LicenceService(){
+    public void create_licence(Date expirationDate) throws IOException{
         license = new License();
+        license.setLicenseId();
         generateKeys(algorithme, size);
-        var ioFormat = IOFormat.valueOf(format);
+        license.setExpiry(expirationDate);
+    }
+
+
+    public void getLicence(){
         try {
-            final var writer = new KeyPairWriter(FileService.getFile("PRIVATE_KEY"), FileService.getFile("PUBLIC_KEY"));
-            writer.write(licenseKeyPair,ioFormat);
-        } catch (Exception e) {
+            license = new LicenseReader(licence_file).read();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
-        };
-        try {
-            license.sign(licenseKeyPair.getPair().getPrivate(), digest);
-        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException
-                | IllegalBlockSizeException e) {
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
-        try {
-            digestPublicKey();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+    public void save_licence() throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException{
+        if (!(licence_directory.isDirectory() && licence_directory.exists())) {
+            licence_directory.mkdirs();
         }
-        
-    }
-
-    public void digestPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException{
-        var key = licenseKeyPair.getPair().getPublic().getEncoded();
-
-        
-        var code = new StringBuilder();
-        for (int i = 0; i < key.length; i++) {
-            int intVal =  key[i] & 0xff;
-            code.append(String.format("%02X",intVal));
-            if ((i + 1) % 4 == 0 && (i + 1) != key.length) {
-                code.append("-");
-            }
+        if (!(licence_file.exists())) {
+            licence_file.createNewFile();
         }
-
-        System.out.println(code.toString());
-        
-        getPublicKey(code.toString());
-
-
-        // System.out.println("Licence ok :"+license.isOK(publicKey));
+        license.sign(licenseKeyPair.getPair().getPrivate(), digest);
+        LicenseWriter writer = new LicenseWriter(licence_file);
+        writer.write(license,IOFormat.valueOf(format));
+        writer.close();
     }
 
-    public PublicKey getPublicKey(String code) throws InvalidKeySpecException, NoSuchAlgorithmException{
-        
-        String licenseKeyClean = code.replace("-", "");
-        byte[] keyBytes = new byte[licenseKeyClean.length() / 2];
-        for (int i = 0; i < licenseKeyClean.length(); i += 2) {
-            keyBytes[i / 2] = (byte) ((Character.digit(licenseKeyClean.charAt(i),16)<<4) + Character.digit(licenseKeyClean.charAt(i+1), 16));
+    public boolean licence_verification(PublicKey publicKey){
+        if (!license.isExpired()) {
+            return license.isOK(publicKey);
         }
+        return false;
+    }
 
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
+    public  byte[] convertPropertyToBytes(Properties properties) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(properties);
+        objectOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
 
+    public  Properties convertBytesToProperty(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+        return (Properties) objectInputStream.readObject();
+    }
+
+    public Feature createFeature(String name,Properties properties) throws IOException{
+        return Feature.Create.binaryFeature(name, convertPropertyToBytes(properties));
     }
 
 
-    public String getPublic_key() {
-        return public_key;
+    public void addToLicence(Feature feature){
+        license.add(feature);
+
     }
 
-    public void setPublic_key(String public_key) {
-        this.public_key = public_key;
-    }
-
-    public String getPrivate_key() {
-        return private_key;
-    }
-
-    public void setPrivate_key(String private_key) {
-        this.private_key = private_key;
-    }
-
-    public String getFormat() {
-        return format;
-    }
-
-    public void setFormat(String format) {
-        this.format = format;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public String getDigest() {
-        return digest;
-    }
-
-    public void setDigest(String digest) {
-        this.digest = digest;
-    }
-
-    public String getAlgorithme() {
-        return algorithme;
-    }
-
-    public void setAlgorithme(String algorithme) {
-        this.algorithme = algorithme;
-    }
-
-    public License getLicense() {
-        return license;
-    }
-
-    public void setLicense(License license) {
-        this.license = license;
-    }
-
-    public LicenseKeyPair getLicenseKeyPair() {
-        return licenseKeyPair;
-    }
-
-    public void setLicenseKeyPair(LicenseKeyPair licenseKeyPair) {
-        this.licenseKeyPair = licenseKeyPair;
+    public void init(String idPc){
+        licence_file = new File("license/"+idPc+"/license.bin");
+        licence_directory = new File("license/"+idPc);
     }
 
 }
