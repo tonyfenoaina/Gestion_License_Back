@@ -49,6 +49,21 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional> <!-- DevTools est uniquement pour le développement -->
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+
+
+		
+		
+		<dependency>
 			<groupId>com.javax0.license3j</groupId>
 			<artifactId>license3j</artifactId>
 			<version>3.1.5</version>
