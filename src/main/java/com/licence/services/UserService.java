@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService{
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email,password)
             );
-            return new ResponseEntity<>(new LoginResponse(tokenService.createToken(email)),HttpStatus.OK);
+            return new ResponseEntity<>(new LoginResponse(tokenService.createToken(email),user),HttpStatus.OK);
         }
         return new ResponseEntity<>(ResponseHandler.showResponse("Wrong password"),HttpStatus.UNAUTHORIZED);
     }

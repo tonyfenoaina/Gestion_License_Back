@@ -30,7 +30,7 @@ insert into users(role,surname,firstname,email,contact,photo,password) values   
                                                                                 (2,'Jeannette','Jeanna','jeannete@gmail.com',null,null,'jeannette'),
                                                                                 (2,'Jeannette2','Jeanna','jeannete2@gmail.com',null,null,'jeannette'),
                                                                                 (2,'Jeannette3','Jeanna','jeannete3@gmail.com',null,null,'jeannette'),
-                                                                                (2,'Jeannette4','Jeanna','jeannete4@gmail.com',null,null,'jeannette'),
+                                                                                (2,'Jeannette4','Jeanna','jeannete4@gmail.com',null,null,'jeannette');
    
 create table customers(
     id serial primary key,
