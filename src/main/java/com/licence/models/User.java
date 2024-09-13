@@ -33,6 +33,7 @@ public class User {
     private String contact;
     private String photo;
     private String password;
+    private int state;
 
 
     public Long getId() {
@@ -83,7 +84,25 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    public int getState() {
+        return state;
+    }
+    public void setState(int state) {
+        this.state = state;
+    }
+    public User() {
+    }
+    public User(String surname, String firstname, String email, String contact, String password) {
+        this.surname = surname;
+        this.firstname = firstname;
+        this.email = email;
+        this.contact = contact;
+        this.password = password;
+        state=1;
+    }
+
+
 
     
-
+    
 }
