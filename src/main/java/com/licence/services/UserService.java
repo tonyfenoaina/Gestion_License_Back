@@ -1,5 +1,6 @@
 package com.licence.services;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,12 +70,12 @@ public class UserService implements UserDetailsService{
         return userRepository.findByEmail(email);
     }
 
-    public ResponseEntity<?> login(LoginDto loginRequest){
+    public ResponseEntity<?> login(LoginDto loginRequest) throws IOException {
         String email = loginRequest.getEmail();
         String password = passwordEncoder.encode(loginRequest.getPassword());
         User user = userRepository.findByEmail(email);
         if (user==null) {
-            return new ResponseEntity<>(ResponseHandler.showResponse("User not found"),HttpStatus.NOT_FOUND);   
+            return new ResponseEntity<>(ResponseHandler.showError(new Exception("User not found"),HttpStatus.NOT_FOUND),HttpStatus.NOT_FOUND);   
         }
         if (user.getPassword().equals(password)) {
             authenticationManager.authenticate(
@@ -82,7 +83,7 @@ public class UserService implements UserDetailsService{
             );
             return new ResponseEntity<>(new LoginResponse(tokenService.createToken(email),user),HttpStatus.OK);
         }
-        return new ResponseEntity<>(ResponseHandler.showResponse("Wrong password"),HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ResponseHandler.showError(new Exception("Wrong password"),HttpStatus.UNAUTHORIZED),HttpStatus.UNAUTHORIZED);
     }
 
 
