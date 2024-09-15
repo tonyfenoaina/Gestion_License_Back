@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.licence.dto.LoginDto;
 import com.licence.dto.UserDto;
@@ -28,6 +29,7 @@ import com.licence.models.User;
 import com.licence.repository.RoleRepository;
 import com.licence.repository.UserRepository;
 import com.licence.response.LoginResponse;
+import com.licence.util.Utilitaire;
 
 
 @Service
@@ -121,6 +123,21 @@ public class UserService implements UserDetailsService{
 
     public void updateStateUser(Long id){
         userRepository.updateState(id);
+    }
+
+    public User updateUserData(UserDto userDto,String token){
+        User user = getUserByToken(token);
+        User newUser = userDto.getUser();
+        newUser.setId(user.getId());
+        newUser.setContact(user.getPhoto());
+        return userRepository.save(newUser);
+    }
+    
+    public User updateUserPhoto(MultipartFile photo,String token) throws IOException{
+        User user = getUserByToken(token);
+        String photo64 = Utilitaire.convertMultipartFileToBase64(photo);
+        user.setPhoto(photo64);
+        return userRepository.save(user);
     }
 
 }

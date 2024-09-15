@@ -26,6 +26,8 @@ public interface UserRepository extends JpaRepository<User,Long>{
     @Query("SELECT u FROM User u WHERE u.role.codeRole = :codeRole AND u.state=1")
     Page<User> findByRole_CodeRole(String codeRole,Pageable pageable);
 
+    Page<User> findByEmailLike(@Param("email")String email,Pageable pageable);
+
     @Modifying
     @Transactional
     @Query("UPDATE User u SET u.state = 0 WHERE u.id = :userId")
