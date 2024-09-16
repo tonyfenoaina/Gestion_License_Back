@@ -13,6 +13,8 @@ import com.licence.models.Customer;
 import com.licence.models.User;
 import com.licence.repository.CustomerRepository;
 import com.licence.repository.UserRepository;
+import java.util.Optional;
+
 
 @Service
 public class CustomerService {
@@ -41,6 +43,11 @@ public class CustomerService {
         customer.setUser(user);
         customerRepository.save(customer);
         return new ResponseEntity<>(customer,HttpStatus.OK);
+    }
+
+    public Customer getById(Long idCustomer){
+        Optional<Customer> customer = customerRepository.findById(idCustomer);
+        return customer.orElse(null);
     }
     
 }

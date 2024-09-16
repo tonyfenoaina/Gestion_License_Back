@@ -11,6 +11,6 @@ import com.licence.models.User;
 
 public interface CustomerRepository extends JpaRepository<Customer,Long>{
     List<Customer> findByUser(User user);
-
     Page<Customer> findAll(Pageable pageable);
+
 }

@@ -23,17 +23,17 @@ public class Licence {
     @ManyToOne
     @JoinColumn(name="users")
     @JsonManagedReference
-    private User users;
+    private Customer users;
 
     @ManyToOne
     @JoinColumn(name = "software")
     @JsonManagedReference
     private Software software;
 
-    @Column
+    @Column(name = "startdate")
     private Date startDate; 
 
-    @Column
+    @Column(name = "enddate")
     private Date endDate;
 
     @Column
@@ -47,11 +47,11 @@ public class Licence {
         this.id = id;
     }
 
-    public User getUsers() {
+    public Customer getUsers() {
         return users;
     }
 
-    public void setUsers(User users) {
+    public void setUsers(Customer users) {
         this.users = users;
     }
 

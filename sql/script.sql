@@ -70,6 +70,17 @@ create table software(
     state int
 );
 
+insert into software(name,dateCreation,photo,state) values ('Soft1','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft2','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft3','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft4','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft5','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft6','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft7','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft8','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft9','2024-09-12',null,1);
+insert into software(name,dateCreation,photo,state) values ('Soft10','2024-09-12',null,1);
+
 
 create table module(
     id serial primary key,
@@ -79,10 +90,13 @@ create table module(
     state int
 );
 
+insert into module(name,photo,software,state) values ('mod1',null,1,1);
+insert into module(name,photo,software,state) values ('mod2',null,1,1);
+insert into module(name,photo,software,state) values ('mod3',null,1,1);
 
 create table licence(
     id serial primary key,
-    users int REFERENCES users(id),
+    users int REFERENCES customers(id),
     software int REFERENCES software(id),
     startDate date,
     endDate date,

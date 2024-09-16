@@ -24,6 +24,7 @@ public class Success {
     public static Success init(String message){
         return new Success(message);
     }
+
     
     
     
