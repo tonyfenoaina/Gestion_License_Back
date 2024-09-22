@@ -31,6 +31,8 @@ public class LicenceController {
 
     @PostMapping("/addLicence")
     public ResponseEntity<?> addLicence(@RequestBody LicenceDto licenceDto) {
+        System.out.println("licence::");
+        System.out.println(licenceDto.getIdCustomer()+"-"+licenceDto.getIdSoftware()+"-"+licenceDto.getNumberActivation()+"-"+licenceDto.getDateEnd()+"-"+licenceDto.getDateStart());
         return new ResponseEntity<>(licenceService.addLicence(licenceDto),HttpStatus.OK);
     }
 

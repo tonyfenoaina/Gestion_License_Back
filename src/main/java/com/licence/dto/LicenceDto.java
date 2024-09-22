@@ -58,6 +58,7 @@ public class LicenceDto {
     }
 
     public Licence setLicence(Customer customer,Software software){
+        System.out.println(customer);
         Licence licence = new Licence();
         licence.setUsers(customer);
         licence.setSoftware(software);

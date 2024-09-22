@@ -4,12 +4,16 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.licence.dto.CustomerDto;
 import com.licence.models.Customer;
+import com.licence.models.Software;
 import com.licence.models.User;
 import com.licence.repository.CustomerRepository;
 import com.licence.repository.UserRepository;
@@ -26,10 +30,10 @@ public class CustomerService {
     @Lazy
     UserService userService;
 
-    
-
-    public List<Customer> getAll(){
-        return customerRepository.findAll();
+    public ResponseEntity<?> getAll(int page,int size){
+        Pageable pageable= PageRequest.of(page, size);
+        Page<Customer> customerPage = customerRepository.findAll(pageable);
+        return new ResponseEntity<>(customerPage,HttpStatus.OK);
     }
 
     public List<Customer> getByUser(String token){

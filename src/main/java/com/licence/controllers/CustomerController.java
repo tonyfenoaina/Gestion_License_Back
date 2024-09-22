@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.licence.dto.CustomerDto;
@@ -22,8 +23,8 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAll() {
-        return new ResponseEntity<>(customerService.getAll(),HttpStatus.OK);
+    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        return customerService.getAll(page, size);
     }
     
     @GetMapping("/get")

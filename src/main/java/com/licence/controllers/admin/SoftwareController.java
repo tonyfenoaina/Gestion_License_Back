@@ -36,11 +36,13 @@ public class SoftwareController {
 
     @PostMapping("/add")
     public ResponseEntity<?> postMethodName(@RequestParam("photo")MultipartFile photo, @RequestParam String name) throws IOException {
+        System.out.println("eto");
         return softwareService.save(photo,name);
     }
 
     @GetMapping("/getAll")
     public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        System.out.println("tes");
         return softwareService.getAll(page, size);
     }
     

@@ -46,5 +46,4 @@ public class UserController {
         User user = userService.updateUserPhoto(photo, token);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
-
 }

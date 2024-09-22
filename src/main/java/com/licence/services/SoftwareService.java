@@ -42,6 +42,7 @@ public class SoftwareService {
 
 
     public ResponseEntity<?> getAll(int page,int size){
+        System.out.println("tonga eto soft");
         Pageable pageable= PageRequest.of(page, size);
         Page<Software> softwarePage = softwareRepository.findAll(pageable);
         return new ResponseEntity<>(softwarePage,HttpStatus.OK);

@@ -39,6 +39,7 @@ public class ModuleController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteModule(@PathVariable("id")Long id){
+        moduleService.updateState(id);
         return new ResponseEntity<>(Success.init("Delete success"),HttpStatus.OK);
     }
 

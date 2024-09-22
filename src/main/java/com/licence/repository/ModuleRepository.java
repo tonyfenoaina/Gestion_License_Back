@@ -9,11 +9,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ModuleRepository extends JpaRepository<Module,Long>{
     
-    @Query("SELECT m FROM Module m WHERE  m.state=1")
-    Page<Module> findAll(Long software,Pageable pageable);
+    @Query("SELECT m FROM Module m WHERE m.software.id = :software AND m.state=1")
+    Page<Module> findAll(@Param("software") Long software,Pageable pageable);
 
     @Modifying
     @Transactional

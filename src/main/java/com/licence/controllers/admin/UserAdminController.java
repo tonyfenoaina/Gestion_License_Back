@@ -17,7 +17,6 @@ import com.licence.services.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/secure/admin/users")
 public class UserAdminController {

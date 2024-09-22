@@ -34,6 +34,7 @@ public class ModuleService {
         module.setName(name);
         module.setSoftware(softwareService.getByID(id_software));
         module.setPhoto(null);
+        module.setState(1);
         moduleRepository.save(module);
         return new ResponseEntity<>(module,HttpStatus.OK);
     }
@@ -41,6 +42,7 @@ public class ModuleService {
     public ResponseEntity<?> getAll(Long softwareID,int page,int size){
         Pageable pageable= PageRequest.of(page, size);
         Page<Module> modulePage = moduleRepository.findAll(softwareID,pageable);
+        System.out.print("tonga eto"+softwareID);
         return new ResponseEntity<>(modulePage,HttpStatus.OK);
     }
 
