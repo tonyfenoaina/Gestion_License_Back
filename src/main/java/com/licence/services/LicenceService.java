@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Properties;
 import java.util.List;
@@ -92,6 +93,23 @@ public class LicenceService {
     @Autowired
     @Lazy
     private LicenceIdentityRepository licenceIdentityRepository;
+
+
+    private static final String HEX_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    public String generateUniqueCode() {
+        StringBuilder code = new StringBuilder(8);
+        
+        // Génération de 8 caractères aléatoires hexadécimaux
+        for (int i = 0; i < 4; i++) {
+            int index = RANDOM.nextInt(HEX_CHARS.length());
+            code.append(HEX_CHARS.charAt(index));
+        }
+
+        // Retourne le code au format "PC-xxxxxxxx"
+        return "PC-" + code.toString().toUpperCase()+System.currentTimeMillis();
+    }
 
 
     public void generateKeys(String algorithme,int size){
@@ -261,6 +279,17 @@ public class LicenceService {
         licenceData.setModules(listModules);
         licenceData.setLicenceIdentities(licenceIdentityRepository.findByLicence_id(idLicence));
         return licenceData;
+    }
+
+    public ResponseEntity<?> sendListIdPc(Long idLicence){
+        Licence licence = getLicenceByID(idLicence);
+        System.out.println(licence);
+        int nombreActivation = licence.getNumberActivation();
+        List<String> listIdPc = new ArrayList<>();
+        for (int i = 0; i < nombreActivation; i++) {
+            listIdPc.add(generateUniqueCode());
+        }
+        return new ResponseEntity<>(listIdPc,HttpStatus.OK);
     }
 
 

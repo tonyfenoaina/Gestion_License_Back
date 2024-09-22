@@ -40,6 +40,12 @@ public class LicenceController {
     public ResponseEntity<?> addModule(@RequestBody LicenceModuleDto licenceModuleDto) {
         return new ResponseEntity<>(licenceService.addModule(licenceModuleDto),HttpStatus.OK);
     }
+
+    @GetMapping("/getIdPc")
+    public ResponseEntity<?> getIdPc(@RequestParam("idLicence") Long idLicence) {
+        return licenceService.sendListIdPc(idLicence);
+    }
+    
     
     @PostMapping("/addPc")
     public ResponseEntity<?> addPc(@RequestBody LicenceIdentityDto licenceIdentityDto) throws Exception {
