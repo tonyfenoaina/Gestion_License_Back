@@ -50,6 +50,11 @@ public class LicenceController {
     public ResponseEntity<?> postMethodName() {
         return new ResponseEntity<>(licenceService.getAll(),HttpStatus.OK);
     }
+
+    @GetMapping("/getAllList")
+    public ResponseEntity<?> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        return licenceService.getAllList(page, size);
+    }
     
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getLicenceData(@PathVariable("id") Long idLicence) {

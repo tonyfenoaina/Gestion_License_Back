@@ -23,6 +23,9 @@ import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -247,6 +250,13 @@ public class LicenceService {
 
     public List<Licence> getAll(){
         return licenceRepository.findAll();
+    }
+
+    public ResponseEntity<?> getAllList(int page,int size){
+        System.out.println("tonga eto soft");
+        Pageable pageable= PageRequest.of(page, size);
+        Page<Licence> licencePage = licenceRepository.findAll(pageable);
+        return new ResponseEntity<>(licencePage,HttpStatus.OK);
     }
 
     public LicenceData getDataLicence(Long idLicence){
