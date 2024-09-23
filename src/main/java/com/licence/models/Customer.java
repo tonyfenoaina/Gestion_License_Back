@@ -28,6 +28,7 @@ public class Customer{
     private String email;
     private String contact;
     private String address;
+    private Integer state;
     
     public Long getId() {
         return id;
@@ -71,6 +72,12 @@ public class Customer{
     public void setAddress(String address) {
         this.address = address;
     }
+    public Integer getState() {
+        return state;
+    }
+    public void setState(Integer state) {
+        this.state = state;
+    }
     public Customer() {
     }
     public Customer(String surname, String firstname, String email, String contact, String address) {
@@ -79,6 +86,7 @@ public class Customer{
         this.email = email;
         this.contact = contact;
         this.address = address;
+        state = 1;
     }
 
     

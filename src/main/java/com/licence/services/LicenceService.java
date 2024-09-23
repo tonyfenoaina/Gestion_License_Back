@@ -19,6 +19,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.apache.logging.log4j.spi.ObjectThreadContextMap;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -371,7 +372,7 @@ public class LicenceService {
     }
 
     public ResponseEntity<?> getLicenceByToken(String token) throws JsonMappingException, JsonProcessingException{
-        LicenceIdentity licence = licenceTokenService.getLicenceIdentity(token);
+        Object licence = licenceTokenService.extractAllClaims(token).get("licence");
         return new ResponseEntity<>(licence,HttpStatus.OK);
     }
 

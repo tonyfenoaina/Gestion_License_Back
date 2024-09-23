@@ -53,10 +53,6 @@ public class LicenceTokenService {
         return Jwts.parser().setSigningKey(KEY.getBytes()).parseClaimsJws(token).getBody();
     }
 
-    public LicenceIdentity getLicenceIdentity(String token) {
-        return extractAllClaims(token).get("licence", LicenceIdentity.class);
-    }
-
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
