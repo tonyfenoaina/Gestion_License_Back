@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -289,8 +290,8 @@ public class LicenceService {
             licenceIdentity.setLicence(licence);
             String publicKey = byteArrayToHex(licenseKeyPair.getPublic());
             licenceIdentity.setPublicKey(publicKey);
-            licenceIdentity.setModeActivation(1);
-            licenceIdentity.setState(1);
+            licenceIdentity.setModeActivation(0);
+            licenceIdentity.setState(0);
             listLicenceIdentities.add(licenceIdentityRepository.save(licenceIdentity));
             save_licence();
         }
