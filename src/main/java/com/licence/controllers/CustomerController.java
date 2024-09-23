@@ -11,8 +11,13 @@ import com.licence.dto.CustomerDto;
 import com.licence.services.CustomerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+
+import com.licence.response.Success;
 
 
 @RestController
@@ -35,6 +40,17 @@ public class CustomerController {
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody CustomerDto customerDto,@RequestHeader("Authorization") String authorizationToken){
         return customerService.add(customerDto,authorizationToken);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> update(@PathVariable("id")Long idCustomer,@RequestBody CustomerDto customerDto,@RequestHeader("Authorization") String authorizationToken){
+        return customerService.update(idCustomer,customerDto,authorizationToken);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long idCustomer){
+        customerService.delete(idCustomer);
+        return new ResponseEntity<>(Success.init("Delete success"),HttpStatus.OK);
     }
 
 }

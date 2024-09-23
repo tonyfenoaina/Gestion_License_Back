@@ -100,7 +100,8 @@ create table licence(
     software int REFERENCES software(id),
     startDate date,
     endDate date,
-    numberActivation int 
+    numberActivation int,
+    state int 
 );
 
 create table licene_module(
@@ -117,3 +118,4 @@ create table licence_identity(
     mode_activation int,
     state int
 );
+

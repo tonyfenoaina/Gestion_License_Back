@@ -1,11 +1,21 @@
 package com.licence.controllers.user;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.licence.dto.LicenceDto;
 import com.licence.dto.LicenceIdentityDto;
 import com.licence.dto.LicenceModuleDto;
@@ -67,11 +77,16 @@ public class LicenceController {
         return new ResponseEntity<>(licenceService.getDataLicence(idLicence),HttpStatus.OK);
     }
 
-    @GetMapping("/getLicence")
-    public ResponseEntity<?> getLicence(@RequestParam String idPc,@RequestParam String idLicence) {
-        return licenceService.isLicenceOK(idPc, idLicence);
+    @GetMapping("/activeLicence")
+    public ResponseEntity<?> activeLicenceManuel(@RequestParam String idPc,@RequestParam String idLicence) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException {
+        return licenceService.activeLicence(idPc, idLicence,1);
     }
     
+
+    @GetMapping("/verifyLicence")
+    public ResponseEntity<?> verifieLicence(@RequestParam("tokenLicence")String token) throws JsonMappingException, JsonProcessingException{
+        return licenceService.getLicenceByToken(token);
+    }
     
     
 

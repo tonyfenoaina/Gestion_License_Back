@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.Date;
 import java.util.Properties;
@@ -31,6 +30,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.licence.dto.LicenceData;
 import com.licence.dto.LicenceDto;
 import com.licence.dto.LicenceIdentityDto;
@@ -41,12 +42,12 @@ import com.licence.models.LicenceIdentity;
 import com.licence.models.LicenceModule;
 import com.licence.models.Module;
 import com.licence.models.Software;
-import com.licence.repository.CustomerRepository;
 import com.licence.repository.LicenceIdentityRepository;
 import com.licence.repository.LicenceModuleRepository;
 import com.licence.repository.LicenceRepository;
-import com.licence.repository.SoftwareRepository;
+import com.licence.response.Error;
 
+import io.jsonwebtoken.Claims;
 import javax0.license3j.Feature;
 import javax0.license3j.License;
 import javax0.license3j.crypto.LicenseKeyPair;
@@ -60,7 +61,7 @@ public class LicenceService {
     File licence_directory; 
     File licence_file; 
 
-    String algorithme = "RSA";
+    final String algorithme = "RSA";
 
     int size = 2048;
     License license;
@@ -97,10 +98,16 @@ public class LicenceService {
     @Lazy
     private LicenceIdentityRepository licenceIdentityRepository;
 
+    @Autowired
+    @Lazy
+    LicenceTokenService licenceTokenService;
+
 
     private static final String HEX_CHARS = "0123456789abcdefghijklmnopqrstuvwxyz";
     private static final SecureRandom RANDOM = new SecureRandom();
 
+
+    // Generer un id pc unique
     public String generateUniqueCode() {
         StringBuilder code = new StringBuilder(8);
         
@@ -114,7 +121,7 @@ public class LicenceService {
         return "PC-" + code.toString().toUpperCase()+System.currentTimeMillis();
     }
 
-
+    // generer les clé privée et public
     public void generateKeys(String algorithme,int size){
         try {
             licenseKeyPair = LicenseKeyPair.Create.from(algorithme, size);
@@ -123,6 +130,7 @@ public class LicenceService {
         }
     }
 
+    // cree une nouvel licence
     public void create_licence(Date expirationDate) throws IOException{
         license = new License();
         license.setLicenseId();
@@ -131,6 +139,7 @@ public class LicenceService {
     }
 
 
+    // recuperer nouvell licence
     public void getLicence(){
         try {
             license = new LicenseReader(licence_file).read();
@@ -143,7 +152,7 @@ public class LicenceService {
         }
     }
 
-
+    // stocker la licence dans le serveur
     public void save_licence() throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException{
         if (!(licence_directory.isDirectory() && licence_directory.exists())) {
             licence_directory.mkdirs();
@@ -156,7 +165,23 @@ public class LicenceService {
         writer.write(license,IOFormat.valueOf(format));
         writer.close();
     }
+    
+    public void save_licence_without_sign() throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException{
+        if (!(licence_directory.isDirectory() && licence_directory.exists())) {
+            licence_directory.mkdirs();
+        }
+        if (!(licence_file.exists())) {
+            licence_file.createNewFile();
+        }
+        // license.sign(licenseKeyPair.getPair().getPrivate(), digest);
+        LicenseWriter writer = new LicenseWriter(licence_file);
+        writer.write(license,IOFormat.valueOf(format));
+        writer.close();
+    }
 
+
+
+    // verifier la licence
     public int licence_verification(byte[] publicKey){
         if (!license.isExpired()) {
             if (license.isOK(publicKey)) {
@@ -167,6 +192,7 @@ public class LicenceService {
         return -1;
     }
 
+    
     public  byte[] convertPropertyToBytes(Properties properties) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
@@ -181,6 +207,7 @@ public class LicenceService {
         return (Properties) objectInputStream.readObject();
     }
 
+
     public Feature createFeature(String name,Properties properties) throws IOException{
         return Feature.Create.binaryFeature(name, convertPropertyToBytes(properties));
     }
@@ -188,13 +215,14 @@ public class LicenceService {
 
     public void addToLicence(Feature feature){
         license.add(feature);
-
     }
+
 
     public void init(String idPc){
         licence_file = new File("license/"+idPc+"/license.bin");
         licence_directory = new File("license/"+idPc);
     }
+
 
     public Licence getLicenceByID(Long id){
         Optional<Licence> licence = licenceRepository.findById(id);
@@ -202,7 +230,7 @@ public class LicenceService {
     }
 
 
-
+    
     public Licence addLicence(LicenceDto licenceDto){
         Customer customer = customerService.getById(licenceDto.getIdCustomer());
         Software software = softwareService.getByID(licenceDto.getIdSoftware());
@@ -225,23 +253,26 @@ public class LicenceService {
         return listLicenceModules;
     }
 
-    public String bytesToHex(byte[] bytes){
-        StringBuilder hexString = new StringBuilder();
+    public String byteArrayToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2 * bytes.length);
         for (byte b : bytes) {
-            hexString.append(String.format("%02x", b));
+            String hex = String.format("%02x", b);  // Format en deux chiffres hexadécimaux
+            hexString.append(hex);
         }
         return hexString.toString();
     }
+    
 
-    public byte[] hexToBytes(String hex){
-        int length = hex.length();
-        byte[] byteArray = new byte[length];
-        for (int i = 0; i < length-1; i++) {
-            byteArray[i / 2] =(byte)((Character.digit(hex.charAt(i), 16) << 4 
-                                    + Character.digit(hex.charAt(i + 1), 16)));
+    public byte[] hexToByteArray(String hex) {
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                                 + Character.digit(hex.charAt(i+1), 16));
         }
-        return byteArray;
+        return data;
     }
+    
 
     
     public List<LicenceIdentity> addPc(LicenceIdentityDto licenceIdentityDto) throws Exception{
@@ -255,7 +286,7 @@ public class LicenceService {
             licenceIdentity.setIdPc(idPc);
             licenceIdentity.setIdLicence(license.getLicenseId().toString());
             licenceIdentity.setLicence(licence);
-            String publicKey = bytesToHex(licenseKeyPair.getPublic());
+            String publicKey = byteArrayToHex(licenseKeyPair.getPublic());
             licenceIdentity.setPublicKey(publicKey);
             licenceIdentity.setModeActivation(1);
             licenceIdentity.setState(1);
@@ -303,21 +334,45 @@ public class LicenceService {
     }
 
 
-    public ResponseEntity<?> isLicenceOK(String idPc,String idLicence){
+    private ResponseEntity<?> isLicenceOK(String idPc,String idLicence,int mode) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException{
         LicenceIdentity licenceIdentity = licenceIdentityRepository.findByIdLicenceAndIdPc(idLicence,idPc);
-        byte[] publicKey = hexToBytes(licenceIdentity.getPublicKey());
-        init(idPc);
-        getLicence();
-        System.out.println(licenceIdentity.getPublicKey().equals(bytesToHex(publicKey)));
         if (license==null || licenceIdentity==null) {
             return new ResponseEntity<>("Licence not found",HttpStatus.NOT_FOUND);
         }
+        byte[] publicKey = hexToByteArray(licenceIdentity.getPublicKey());
         if (licence_verification(publicKey)==1) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            licenceIdentity.setState(1);
+            licenceIdentity.setModeActivation(mode);
+            licenceIdentityRepository.save(licenceIdentity);
+            String token = licenceTokenService.generateToken(licenceIdentity);
+            Feature dateFeature = Feature.Create.dateFeature("date_activation", new Date());
+            addToLicence(dateFeature);
+            Feature tokenFeature = Feature.Create.stringFeature("token", token);
+            addToLicence(tokenFeature);
+            save_licence_without_sign();
+            return new ResponseEntity<>(token,HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(licence_verification(publicKey)==0 ? "Licence not found" : "Date expired",HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(licence_verification(publicKey)==0 ? "Code incorrect" : "Date expired",HttpStatus.UNAUTHORIZED);
         }
+    }
+
+    public ResponseEntity<?> activeLicence(String idPc,String idLicence,int mode) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException{
+        init(idPc);
+        getLicence();
+        System.out.println(license);
+        Feature feature = license.get("token");
+        if (feature==null) {
+            return isLicenceOK(idPc, idLicence, mode);
+        }
+        else{
+            return new ResponseEntity<>(Error.init("Licence deja active"),HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public ResponseEntity<?> getLicenceByToken(String token) throws JsonMappingException, JsonProcessingException{
+        LicenceIdentity licence = licenceTokenService.getLicenceIdentity(token);
+        return new ResponseEntity<>(licence,HttpStatus.OK);
     }
 
 }

@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.licence.dto.CustomerDto;
 import com.licence.models.Customer;
-import com.licence.models.Software;
 import com.licence.models.User;
 import com.licence.repository.CustomerRepository;
-import com.licence.repository.UserRepository;
 import java.util.Optional;
 
 
@@ -47,6 +45,19 @@ public class CustomerService {
         customer.setUser(user);
         customerRepository.save(customer);
         return new ResponseEntity<>(customer,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> update(Long idCustomer,CustomerDto customerDto,String authorizationToken){
+        User user = userService.getUserByToken(authorizationToken);
+        Customer customer = customerDto.getCustomer();
+        customer.setId(idCustomer);
+        customer.setUser(user);
+        customerRepository.save(customer);
+        return new ResponseEntity<>(customer,HttpStatus.OK);
+    }
+
+    public void delete(Long idCustomer){
+        customerRepository.updateState(idCustomer);
     }
 
     public Customer getById(Long idCustomer){
