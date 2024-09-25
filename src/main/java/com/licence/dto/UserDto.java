@@ -49,12 +49,6 @@ public class UserDto {
         this.password = password;
         this.contact = contact;
     }
-    @Override
-    public String toString() {
-        return "UserDto [email=" + email + ", surname=" + surname + ", firstname=" + firstname + ", password="
-                + password + ", contact=" + contact + "]";
-    }
-    
 
     
     public User getUser(){

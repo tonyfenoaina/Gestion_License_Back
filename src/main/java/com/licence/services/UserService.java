@@ -130,6 +130,7 @@ public class UserService implements UserDetailsService{
         User newUser = userDto.getUser();
         newUser.setId(user.getId());
         newUser.setContact(user.getPhoto());
+        newUser.setRole(user.getRole());
         return userRepository.save(newUser);
     }
     
