@@ -100,4 +100,9 @@ public class LicenceController {
     }
     
 
+    @GetMapping("/download")
+    public ResponseEntity<?> downloadPdf(@RequestParam("idLicence")Long idLicence){
+        return licenceService.getDataLicencePdf(idLicence);
+    }
+
 }

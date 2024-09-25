@@ -1,6 +1,7 @@
 package com.licence.services;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,14 +22,16 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.logging.log4j.spi.ObjectThreadContextMap;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -322,6 +325,21 @@ public class LicenceService {
         licenceData.setModules(listModules);
         licenceData.setLicenceIdentities(licenceIdentityRepository.findByLicence_id(idLicence));
         return licenceData;
+    }
+
+    public ResponseEntity<?> getDataLicencePdf(Long idLicence){
+        LicenceData licenceData = getDataLicence(idLicence);
+        HttpHeaders headers = new HttpHeaders();
+        ByteArrayOutputStream byteArrayOutputStream = PdfService.getByteArrayOutputStreamPdf(licenceData);
+        byte[] bytes= byteArrayOutputStream.toByteArray();
+
+        ByteArrayResource byteArrayResource = new ByteArrayResource(bytes);
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=licence_info.pdf");
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(bytes.length)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(byteArrayResource);
     }
 
     public ResponseEntity<?> sendListIdPc(Long idLicence){
