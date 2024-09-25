@@ -93,6 +93,11 @@ public class LicenceController {
         return licenceService.getLicenceByToken(token);
     }
     
+
+    @GetMapping("/getAllLicenceByCustomer")
+    public ResponseEntity<?> getAllLicenceByCustomer(@RequestParam("idCustomer")Long idCustomer){
+        return licenceService.getAllLicenceByCustomer(idCustomer);
+    }
     
 
 }

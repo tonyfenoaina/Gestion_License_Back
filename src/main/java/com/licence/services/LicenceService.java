@@ -377,4 +377,10 @@ public class LicenceService {
         return new ResponseEntity<>(licence,HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getAllLicenceByCustomer(Long idCustomer){
+        
+        List<Licence> licences = licenceRepository.findByUserId(idCustomer);
+        return new ResponseEntity<>(licences,HttpStatus.OK);
+    }
+
 }
