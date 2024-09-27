@@ -37,6 +37,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.getByUser(authorizationToken),HttpStatus.OK);
     }
 
+
     @PostMapping("/add")
     public ResponseEntity<?> add(@RequestBody CustomerDto customerDto,@RequestHeader("Authorization") String authorizationToken){
         return customerService.add(customerDto,authorizationToken);
@@ -51,6 +52,11 @@ public class CustomerController {
     public ResponseEntity<?> delete(@PathVariable("id") Long idCustomer){
         customerService.delete(idCustomer);
         return new ResponseEntity<>(Success.init("Delete success"),HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("search")String search){
+        return customerService.search(search);
     }
 
 }

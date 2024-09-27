@@ -14,6 +14,7 @@ import com.licence.models.Module;
 import com.licence.repository.ModuleRepository;
 import com.licence.util.Utilitaire;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -60,6 +61,11 @@ public class ModuleService {
     }
     public void updatePhoto(MultipartFile photo,Long id) throws IOException{
         moduleRepository.updatePhoto(Utilitaire.convertMultipartFileToBase64(photo), id);;
+    }
+
+    public ResponseEntity<?> search(String search,Long idSoftware){
+        List<Module> searchByName = moduleRepository.searchByName(search,idSoftware);
+        return new ResponseEntity<>(searchByName,HttpStatus.OK);
     }
 
 }

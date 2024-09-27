@@ -29,6 +29,11 @@ public class PdfService {
         Color green = new DeviceRgb(0, 255, 0);
         Color red = new DeviceRgb(255, 0, 0);
 
+        document.add(new Paragraph("Licence details")
+            .setBold()
+            .setFontSize(18)
+            .setMarginBottom(20));
+
         // Section "Date de début, Date de fin et Nombre d'activation"
         document.add(new Paragraph("Date début de validité : "+simpleDateFormat.format(licenceData.getLicence().getStartDate())));
         document.add(new Paragraph("Date fin de validité : "+simpleDateFormat.format(licenceData.getLicence().getEndDate())));

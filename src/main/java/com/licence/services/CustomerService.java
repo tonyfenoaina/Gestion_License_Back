@@ -1,5 +1,6 @@
 package com.licence.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,44 @@ public class CustomerService {
     public Customer getById(Long idCustomer){
         Optional<Customer> customer = customerRepository.findById(idCustomer);
         return customer.orElse(null);
+    }
+
+    public void addListInList(List<Customer> grandList,List<Customer> miniList){
+        for (Customer customer : miniList) {
+            grandList.add(customer);
+        }
+    }
+
+    public boolean containtsCustomerWithId(List<Customer> list,Long id){
+        for (Customer customer : list) {
+            if (customer.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ResponseEntity<?> search(String search){
+
+        List<Customer> value = new ArrayList();
+
+        List<Customer> customersBySurname = customerRepository.searchBySurname(search);
+        List<Customer> customersByFirstname = customerRepository.searchByFirstname(search);
+        List<Customer> customersByEmail = customerRepository.searchByEmail(search);
+
+        List<Customer> list = new ArrayList<>();
+
+        addListInList(list, customersBySurname);
+        addListInList(list, customersByFirstname);
+        addListInList(list, customersByEmail);
+
+        for (Customer customer : list) {
+            if (!containtsCustomerWithId(value, customer.getId())) {
+                value.add(customer);
+            }
+        }
+    
+        return new ResponseEntity<>(value,HttpStatus.OK);
     }
     
 }

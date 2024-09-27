@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.licence.models.Customer;
 import com.licence.models.User;
@@ -21,5 +22,14 @@ public interface CustomerRepository extends JpaRepository<Customer,Long>{
     @Transactional
     @Query("UPDATE Customer c SET c.state = 0 WHERE c.id = :id")
     void updateState(Long id);
+
+    @Query("SELECT c FROM Customer c WHERE c.surname ILIKE %:name%")
+    List<Customer> searchBySurname(@Param("name")String name);
+
+    @Query("SELECT c FROM Customer c WHERE c.firstname ILIKE %:name%")
+    List<Customer> searchByFirstname(@Param("name")String name);
+    
+    @Query("SELECT c FROM Customer c WHERE c.email ILIKE %:email%")
+    List<Customer> searchByEmail(@Param("email")String email);
 
 }

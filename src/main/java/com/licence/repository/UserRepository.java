@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.licence.models.Customer;
 import com.licence.models.Role;
 import com.licence.models.User;
 
@@ -32,6 +33,17 @@ public interface UserRepository extends JpaRepository<User,Long>{
     @Transactional
     @Query("UPDATE User u SET u.state = 0 WHERE u.id = :userId")
     void updateState(@Param("userId") Long userId);
+
+    
+
+    @Query("SELECT u FROM User u WHERE u.surname ILIKE %:name%")
+    List<User> searchBySurname(@Param("name")String name);
+
+    @Query("SELECT u FROM User u WHERE u.firstname ILIKE %:name%")
+    List<User> searchByFirstname(@Param("name")String name);
+    
+    @Query("SELECT u FROM User u WHERE u.email ILIKE %:email%")
+    List<User> searchByEmail(@Param("email")String email);
 }
 
 

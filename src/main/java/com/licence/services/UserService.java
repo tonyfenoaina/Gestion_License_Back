@@ -1,6 +1,7 @@
 package com.licence.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.licence.dto.LoginDto;
 import com.licence.dto.UserDto;
 import com.licence.handler.ResponseHandler;
+import com.licence.models.Customer;
 import com.licence.models.Role;
 import com.licence.models.User;
 import com.licence.repository.RoleRepository;
@@ -139,6 +141,42 @@ public class UserService implements UserDetailsService{
         String photo64 = Utilitaire.convertMultipartFileToBase64(photo);
         user.setPhoto(photo64);
         return userRepository.save(user);
+    }
+
+    public void addListInList(List<User> grandList,List<User> miniList){
+        for (User user : miniList) {
+            grandList.add(user);
+        }
+    }
+
+    public boolean containtsUserWithId(List<User> list,Long id){
+        for (User user : list) {
+            if (user.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ResponseEntity<?> search(String search){
+        List<User> value = new ArrayList<>();
+
+        List<User> searchBySurname = userRepository.searchBySurname(search);
+        List<User> searchByFirstname = userRepository.searchByFirstname(search);
+        List<User> searchByEmail = userRepository.searchByEmail(search);
+
+        List<User> list = new ArrayList();
+        addListInList(list, searchBySurname);
+        addListInList(list, searchByFirstname);
+        addListInList(list, searchByEmail);
+
+        for (User user : list) {
+            if (!containtsUserWithId(list, user.getId())) {
+                value.add(user);
+            }
+        }
+
+        return new ResponseEntity<>(value,HttpStatus.OK);
     }
 
 }

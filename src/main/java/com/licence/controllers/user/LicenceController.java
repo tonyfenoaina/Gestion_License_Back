@@ -77,6 +77,16 @@ public class LicenceController {
         return new ResponseEntity<>(licenceService.getDataLicence(idLicence),HttpStatus.OK);
     }
 
+    @GetMapping("/getLicenceIdentityActive")
+    public ResponseEntity<?> getLicenceIdentityActive(@RequestParam("idLicence")Long idLicence){
+        return licenceService.getLicenceIdentityActive(idLicence);
+    }
+
+    @GetMapping("/getLicenceIdentityNonActive")
+    public ResponseEntity<?> getLicenceIdentityNonActive(@RequestParam("idLicence")Long idLicence){
+        return licenceService.getLicenceIdentityNonActive(idLicence);
+    }
+
     @GetMapping("/activeLicence_manuel")
     public ResponseEntity<?> activeLicenceManuel(@RequestParam String idPc,@RequestParam String idLicence) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException {
         return licenceService.activeLicence(idPc, idLicence,1);

@@ -34,6 +34,8 @@ public class UserAdminController {
     public ResponseEntity<?> addUser(@RequestBody UserDto user) {
         return userService.createUser(user);
     }
+
+    
    
     @GetMapping("/getUser")
     public ResponseEntity<?> getUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {

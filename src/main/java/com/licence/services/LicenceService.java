@@ -401,4 +401,26 @@ public class LicenceService {
         return new ResponseEntity<>(licences,HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getLicenceIdentityActive(Long idLicence){
+        List<LicenceIdentity> licenceIdentities = licenceIdentityRepository.findByLicence_id(idLicence);
+        List<LicenceIdentity> licenceIdentitiesActive = new ArrayList();
+        for (LicenceIdentity licenceIdentity : licenceIdentities) {
+            if (licenceIdentity.getState()!=0 && licenceIdentity.getModeActivation()!=0) {
+                licenceIdentitiesActive.add(licenceIdentity);
+            }
+        }
+        return new ResponseEntity<>(licenceIdentitiesActive,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getLicenceIdentityNonActive(Long idLicence){
+        List<LicenceIdentity> licenceIdentities = licenceIdentityRepository.findByLicence_id(idLicence);
+        List<LicenceIdentity> licenceIdentitiesNonActive = new ArrayList();
+        for (LicenceIdentity licenceIdentity : licenceIdentities) {
+            if (licenceIdentity.getState()==0 && licenceIdentity.getModeActivation()==0) {
+                licenceIdentitiesNonActive.add(licenceIdentity);
+            }
+        }
+        return new ResponseEntity<>(licenceIdentitiesNonActive,HttpStatus.OK);
+    }
+
 }

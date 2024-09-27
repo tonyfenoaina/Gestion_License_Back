@@ -23,4 +23,10 @@ public class ModuleUserController {
     public ResponseEntity<?> getAll(@PathVariable("id")Long idSoftware,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
         return moduleService.getAll(idSoftware,page,size);
     }
+
+    @GetMapping("/search/{id}")
+    public ResponseEntity<?> getMethodName(@RequestParam("search") String search,@PathVariable("id")Long idSoftware) {
+        return moduleService.search(search, idSoftware);
+    }
+    
 }
