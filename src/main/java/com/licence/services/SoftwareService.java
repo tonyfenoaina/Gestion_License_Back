@@ -2,6 +2,7 @@ package com.licence.services;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,10 @@ public class SoftwareService {
         softwareRepository.updatePhoto(Utilitaire.convertMultipartFileToBase64(photo), id);;
     }
 
+
+    public ResponseEntity<?> search(String search){
+        List<Software> getAllBySearchName = softwareRepository.searchByName(search);
+        return new ResponseEntity(getAllBySearchName,HttpStatus.OK);
+    }
 
 }

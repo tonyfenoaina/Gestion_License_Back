@@ -72,4 +72,9 @@ public class SoftwareController {
         return new ResponseEntity<>(software,HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("search")String search){
+        return softwareService.search(search);
+    }
+
 }
