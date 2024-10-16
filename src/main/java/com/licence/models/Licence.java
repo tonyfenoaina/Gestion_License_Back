@@ -39,6 +39,9 @@ public class Licence {
     @Column
     private Integer numberActivation;
 
+    @Column
+    private Integer state;
+
     public Long getId() {
         return id;
     }
@@ -87,6 +90,12 @@ public class Licence {
         this.numberActivation = numberActivation;
     }
 
+    public Integer getState() {
+        return state;
+    }
     
+    public void setState(Integer state) {
+        this.state = state;
+    }
 
 }
