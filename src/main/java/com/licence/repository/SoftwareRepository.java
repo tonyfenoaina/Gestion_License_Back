@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 
@@ -32,4 +33,7 @@ public interface SoftwareRepository  extends JpaRepository<Software,Long>{
     @Transactional
     @Query("UPDATE Software s SET s.name = :name WHERE s.id = :id")
     void updateName(String name,Long id);
+
+    @Query("SELECT u FROM Software u WHERE u.name ILIKE %:keyword% and u.state = 1")
+    Page<Software> advancedSearch(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -21,6 +21,7 @@ public class Software {
     @Column(name = "datecreation")
     private Date dateCreation;
 
+    @Column(columnDefinition = "text")
     private String photo;
     private Integer state;
     

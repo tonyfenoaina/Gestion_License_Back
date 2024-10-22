@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.licence.models.Customer;
+import com.licence.models.Software;
 import com.licence.models.User;
 
 import jakarta.transaction.Transactional;
@@ -31,5 +32,8 @@ public interface CustomerRepository extends JpaRepository<Customer,Long>{
     
     @Query("SELECT c FROM Customer c WHERE c.email ILIKE %:email%")
     List<Customer> searchByEmail(@Param("email")String email);
+
+    @Query("SELECT u FROM Customer u WHERE (u.surname ILIKE %:keyword% or u.firstname ILIKE %:keyword% or u.email ILIKE %:keyword%) and u.state = 1" )
+    Page<Customer> advancedSearch(@Param("keyword") String keyword, Pageable pageable);
 
 }

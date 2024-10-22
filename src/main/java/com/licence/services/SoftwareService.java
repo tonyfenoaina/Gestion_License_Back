@@ -15,50 +15,55 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.licence.models.Software;
+import com.licence.models.User;
 import com.licence.repository.SoftwareRepository;
 import com.licence.util.Utilitaire;
 
 @Service
 public class SoftwareService {
-    
+
     @Autowired
     @Lazy
     private SoftwareRepository softwareRepository;
 
-    public ResponseEntity<?> save(MultipartFile photo,String name) throws IOException{
+    public ResponseEntity<?> save(MultipartFile photo, String name) throws IOException {
         Software software = new Software();
         software.setName(name);
         software.setPhoto(Utilitaire.convertMultipartFileToBase64(photo));
         software.setDateCreation(new Date());
         software.setState(1);
         softwareRepository.save(software);
-        return new ResponseEntity<>(software,HttpStatus.OK);
+        return new ResponseEntity<>(software, HttpStatus.OK);
     }
 
-    public Software getByID(Long id){
+    public Software getByID(Long id) {
         Optional<Software> software = softwareRepository.findById(id);
         return software.orElse(null);
     }
 
-
-    public ResponseEntity<?> getAll(int page,int size){
+    public ResponseEntity<?> getAll(int page, int size) {
         System.out.println("tonga eto soft");
-        Pageable pageable= PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size);
         Page<Software> softwarePage = softwareRepository.findAll(pageable);
-        return new ResponseEntity<>(softwarePage,HttpStatus.OK);
+        return new ResponseEntity<>(softwarePage, HttpStatus.OK);
     }
-    
 
-    public void updateState(Long id){
+    public void updateState(Long id) {
         softwareRepository.updateState(id);
     }
-    
-    public void updateName(Long id,String name){
+
+    public void updateName(Long id, String name) {
         softwareRepository.updateName(name, id);
     }
-    public void updatePhoto(MultipartFile photo,Long id) throws IOException{
-        softwareRepository.updatePhoto(Utilitaire.convertMultipartFileToBase64(photo), id);;
+
+    public void updatePhoto(MultipartFile photo, Long id) throws IOException {
+        softwareRepository.updatePhoto(Utilitaire.convertMultipartFileToBase64(photo), id);
+        ;
     }
 
-
+    public ResponseEntity<?> advancedSearch(String keywords, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Software> softPage = softwareRepository.advancedSearch(keywords, pageable);
+        return new ResponseEntity<>(softPage, HttpStatus.OK);
+    }
 }

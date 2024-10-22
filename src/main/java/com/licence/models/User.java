@@ -31,6 +31,8 @@ public class User {
     private String email;
     
     private String contact;
+    
+    @Column(columnDefinition = "text")
     private String photo;
     private String password;
     private int state;

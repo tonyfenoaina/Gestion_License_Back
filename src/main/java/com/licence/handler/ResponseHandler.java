@@ -10,8 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ResponseHandler {
 
-
-
     public static String showError(Exception exception, HttpStatus httpStatus) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> map = new HashMap<String, Object>();

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.licence.models.Module;
+import com.licence.models.Software;
 import com.licence.repository.ModuleRepository;
 import com.licence.util.Utilitaire;
 import java.io.IOException;
@@ -66,6 +67,12 @@ public class ModuleService {
     public ResponseEntity<?> search(String search,Long idSoftware){
         List<Module> searchByName = moduleRepository.searchByName(search,idSoftware);
         return new ResponseEntity<>(searchByName,HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> advancedSearch(String keywords,String software, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Module> modPage = moduleRepository.advancedSearch(keywords,software, pageable);
+        return new ResponseEntity<>(modPage, HttpStatus.OK);
     }
 
 }

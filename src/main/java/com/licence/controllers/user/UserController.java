@@ -37,6 +37,7 @@ public class UserController {
 
     @PutMapping("/update/data")
     public ResponseEntity<?> updateData(@RequestHeader("Authorization")String token,@RequestBody UserDto userDto) {
+        System.out.println("data ");
         User user = userService.updateUserData(userDto, token);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }

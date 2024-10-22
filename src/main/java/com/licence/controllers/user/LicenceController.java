@@ -105,10 +105,9 @@ public class LicenceController {
     
 
     @GetMapping("/getAllLicenceByCustomer")
-    public ResponseEntity<?> getAllLicenceByCustomer(@RequestParam("idCustomer")Long idCustomer){
-        return licenceService.getAllLicenceByCustomer(idCustomer);
+    public ResponseEntity<?> getAllLicenceByCustomer(@RequestParam("idCustomer")Long idCustomer, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
+        return licenceService.getAllLicenceByCustomer(idCustomer, page, size);
     }
-    
 
     @GetMapping("/download")
     public ResponseEntity<?> downloadPdf(@RequestParam("idLicence")Long idLicence){

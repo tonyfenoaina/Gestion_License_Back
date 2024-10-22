@@ -24,7 +24,6 @@ public class AuthController{
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginRequest) throws IOException{
-        System.out.println("HIIII "+loginRequest.toString());
         return userService.login(loginRequest);
     }
 

@@ -146,16 +146,19 @@ public class LicenceService {
 
     // recuperer nouvell licence
     public void getLicence(){
-        try {
-            license = new LicenseReader(licence_file).read();
+        try (LicenseReader licenseReader = new LicenseReader(licence_file)) {
+            license = licenseReader.read();
+            System.out.println("eto");
+            System.out.println(license.getLicenseId());
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+            System.out.println("tsita");
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            System.out.println("tsita");
         }
     }
+    
 
     // stocker la licence dans le serveur
     public void save_licence() throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException{
@@ -356,6 +359,8 @@ public class LicenceService {
 
     private ResponseEntity<?> isLicenceOK(String idPc,String idLicence,int mode) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, IOException{
         LicenceIdentity licenceIdentity = licenceIdentityRepository.findByIdLicenceAndIdPc(idLicence,idPc);
+        System.out.println("eto"+idLicence);
+        System.out.println("eto2"+idPc);
         if (license==null || licenceIdentity==null) {
             return new ResponseEntity<>("Licence not found",HttpStatus.NOT_FOUND);
         }
@@ -395,9 +400,9 @@ public class LicenceService {
         return new ResponseEntity<>(licence,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getAllLicenceByCustomer(Long idCustomer){
-        
-        List<Licence> licences = licenceRepository.findByUserId(idCustomer);
+    public ResponseEntity<?> getAllLicenceByCustomer(Long idCustomer, int page,int size){
+        Pageable pageable= PageRequest.of(page, size);
+        Page<Licence> licences = licenceRepository.findByUserId(idCustomer,pageable);
         return new ResponseEntity<>(licences,HttpStatus.OK);
     }
 

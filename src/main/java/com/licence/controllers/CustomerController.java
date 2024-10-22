@@ -59,4 +59,11 @@ public class CustomerController {
         return customerService.search(search);
     }
 
+    @GetMapping("/searchh")
+    public ResponseEntity<?> searchUsers(@RequestParam("keyword") String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        System.out.println("key: "+keyword);
+        System.out.println(customerService.advancedSearch(keyword,page,size));
+        return customerService.advancedSearch(keyword,page,size);
+    }
+
 }

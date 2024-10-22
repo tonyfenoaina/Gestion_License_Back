@@ -28,5 +28,11 @@ public class ModuleUserController {
     public ResponseEntity<?> getMethodName(@RequestParam("search") String search,@PathVariable("id")Long idSoftware) {
         return moduleService.search(search, idSoftware);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("keyword") String keyword, @RequestParam("software") String software,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        System.out.println("key: "+keyword);
+        return moduleService.advancedSearch(keyword,software,page,size);
+    }
     
 }

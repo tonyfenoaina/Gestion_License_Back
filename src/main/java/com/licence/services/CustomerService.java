@@ -40,6 +40,12 @@ public class CustomerService {
         return customerRepository.findByUser(user);
     }
 
+    public ResponseEntity<?> advancedSearch(String keywords, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Customer> custPage = customerRepository.advancedSearch(keywords, pageable);
+        return new ResponseEntity<>(custPage, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> add(CustomerDto customerDto,String authorizationToken){
         User user = userService.getUserByToken(authorizationToken);
         Customer customer = customerDto.getCustomer();

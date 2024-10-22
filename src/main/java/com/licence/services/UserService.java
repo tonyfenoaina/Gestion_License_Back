@@ -108,6 +108,11 @@ public class UserService implements UserDetailsService{
         return new ResponseEntity<>(userPage,HttpStatus.OK); 
     }
 
+    public ResponseEntity<?> advancedSearch(String keywords,int page,int size){
+        Pageable pageable= PageRequest.of(page, size);
+        Page<User> userPage = userRepository.advancedSearch(keywords,pageable);
+        return new ResponseEntity<>(userPage,HttpStatus.OK); 
+    }
 
     public List<User> getAll(){
         return userRepository.findAll();
@@ -131,12 +136,12 @@ public class UserService implements UserDetailsService{
         User user = getUserByToken(token);
         User newUser = userDto.getUser();
         newUser.setId(user.getId());
-        newUser.setContact(user.getPhoto());
         newUser.setRole(user.getRole());
         return userRepository.save(newUser);
     }
     
     public User updateUserPhoto(MultipartFile photo,String token) throws IOException{
+        System.out.println("ETO");
         User user = getUserByToken(token);
         String photo64 = Utilitaire.convertMultipartFileToBase64(photo);
         user.setPhoto(photo64);

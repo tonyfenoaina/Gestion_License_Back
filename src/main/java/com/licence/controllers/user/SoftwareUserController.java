@@ -30,4 +30,11 @@ public class SoftwareUserController {
         System.out.println("tes");
         return softwareService.getAll(page, size);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("keyword") String keyword, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        System.out.println("key: "+keyword);
+        System.out.println(softwareService.advancedSearch(keyword,page,size));
+        return softwareService.advancedSearch(keyword,page,size);
+    }
 }
