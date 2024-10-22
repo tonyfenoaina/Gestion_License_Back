@@ -67,4 +67,10 @@ public class SoftwareService {
         Page<Software> softPage = softwareRepository.advancedSearch(keywords, pageable);
         return new ResponseEntity<>(softPage, HttpStatus.OK);
     }
+
+    public ResponseEntity<?> search(String search){
+        List<Software> getAllBySearchName = softwareRepository.searchByName(search);
+        return new ResponseEntity(getAllBySearchName,HttpStatus.OK);
+    }
+
 }
