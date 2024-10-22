@@ -114,4 +114,10 @@ public class LicenceController {
         return licenceService.getDataLicencePdf(idLicence);
     }
 
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> deleteLicence(@PathVariable("id") Long idLicence) {
+        return licenceService.updateState(idLicence);
+    }
+    
+
 }

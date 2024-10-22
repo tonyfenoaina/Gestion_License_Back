@@ -4,6 +4,8 @@ import com.licence.models.Software;
 
 import jakarta.transaction.Transactional;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +38,7 @@ public interface SoftwareRepository  extends JpaRepository<Software,Long>{
 
     @Query("SELECT u FROM Software u WHERE u.name ILIKE %:keyword% and u.state = 1")
     Page<Software> advancedSearch(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT s FROM Software s WHERE s.name LIKE %:name%")
+    List<Software> searchByName(@Param("name")String name);
 }
